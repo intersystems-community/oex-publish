@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Export generator="Cache" version="25">
-  <Document name="yourname-libraryname.ZPM">
+  <Document name="oex-publish.ZPM">
     <Module>
-      <Name>yourname-libraryname</Name>
+      <Name>oex-publish</Name>
       <Version>1.0.0</Version>
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
-      <Resource Name="dc.packagename.PKG"/>
+      <Resource Name="OEX.PKG"/>
     </Module>
   </Document>
 </Export>
