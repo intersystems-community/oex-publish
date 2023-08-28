@@ -7,6 +7,19 @@
       <Packaging>module</Packaging>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="OEX.PKG"/>
+      <CSPApplication
+        Url="/oex"
+        Path="/src"
+        Recurse="1"
+        Directory="{$cspdir}/oex"
+        MatchRoles=":%ALL"
+        PasswordAuthEnabled="1"
+        UnauthenticatedEnabled="1"
+        DispatchClass="OEX.REST"
+        ServeFiles="1"
+        CookiePath="/oex"
+        UseCookies="2"
+       />
     </Module>
   </Document>
 </Export>

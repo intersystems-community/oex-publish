@@ -11,3 +11,7 @@ services:
       - 53773
     volumes:
       - ./:/irisrun/repo
+    environment:
+      - REGISTRY=https://test.pm.community.intersystems.com/registry/
+      - REGISTRYUSER=test
+      - REGISTRYPASS=PassWord42
