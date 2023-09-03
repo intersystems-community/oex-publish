@@ -31,6 +31,7 @@ ClassMethod IPMPublish(moduleName As %String, moduleFolder) As %Status
 {
     set tSC = $$$OK
     set filename = ##class(%File).TempFilename("txt")
+    do ##class(OEX.Utils).log("zpm file: "_filename)
     open filename:("NRW"):1
     use filename
     try {
@@ -40,14 +41,16 @@ ClassMethod IPMPublish(moduleName As %String, moduleFolder) As %Status
 
         $$$ThrowOnError($zpm("repo -n registry -r -url https://pm.community.intersystems.com/ -user """" -pass """""))
         $$$ThrowOnError($zpm("load " _ moduleFolder))
+        do ##class(OEX.Utils).log("module loaded :"_moduleName_", "_moduleFolder)
         $$$ThrowOnError($zpm("repo -n registry -r -url "_registry_" -user """_registryUser_""" -pass """_registryPass_""""))
         $$$ThrowOnError($zpm("publish " _ moduleName))
+        do ##class(OEX.Utils).log("module published :"_moduleName)
         $$$ThrowOnError($zpm("uninstall " _ moduleName _ " -recurse"))
 
     } catch ex {
         set tSC = ex.AsStatus()
     }
-    close filename:"D"
+    close filename
     return tSC
 }
 
