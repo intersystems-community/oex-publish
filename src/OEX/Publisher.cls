@@ -12,6 +12,9 @@ ClassMethod Publish(url) As %Status
 
         set packageFolder = repo.DownloadPackage()
 
+        If '##class(%File).Exists(packageFolder_"/module.xml") {
+            $$$ThrowStatus($$$ERROR(5001,"file `module.xml` doesn't exist"))
+        }
         set modulexmlname = ..GetModuleNameFromXML(packageFolder_"/module.xml")
 
         $$$ThrowOnError(..IPMPublish(modulexmlname, packageFolder))

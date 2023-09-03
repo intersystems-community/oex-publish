@@ -62,4 +62,9 @@ ClassMethod ReadXMLElements(pStream As %Stream.Object, xPathArray) As %Status
     }
 }
 
+ClassMethod log(message As %String) As %Status
+{
+    return ##class(%SYS.System).WriteToConsoleLog(message,, 0)
+}
+
 }

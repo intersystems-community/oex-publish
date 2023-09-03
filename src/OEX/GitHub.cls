@@ -36,15 +36,20 @@ Method DownloadPackage() As %String
     set ht = ..GetHTTPRequest()
     set ht.Location = ..Path_"archive/"_branch_".tar.gz"
     $$$ThrowOnError(ht.Get())
+    do ##class(OEX.Utils).log("github download "_ht.Location_". Status: "_ht.HttpResponse.StatusCode)
     if (ht.HttpResponse.StatusCode'=200) {
         $$$ThrowStatus($$$ERROR(5001,"Unable to download repository "_..URL))
     }
     set fs = ##class(%Stream.FileBinary).%New()
     set archiveFileName = ##class(%File).TempFilename("tgz")
+    set stdout = ##class(%File).TempFilename("txt")
+    set stderr = ##class(%File).TempFilename("txt")
     set fs.Filename = archiveFileName
     do fs.CopyFromAndSave(ht.HttpResponse.Data)
     set outputFolder = $$$FileTempDir
-    set res = $Zf(-100, "", "tar", "-zxf", archiveFileName, "-C", outputFolder)
+    do ##class(OEX.Utils).log("archive: "_archiveFileName_". outputFolder: "_outputFolder_". stdout: "_stdout_". stderr: "_stderr)
+    set res = $Zf(-100, "/LOGCMD /STDOUT="""_stdout_""" /STDERR="""_stderr_"""", "tar", "-zxvf", archiveFileName, "-C", outputFolder)
+    do ##class(OEX.Utils).log("'tar -zxvf' result: "_res)
     set name = ..GetPackageNameFromRepositoryURL()
     return outputFolder_"/"_name_"-"_branch
 }
