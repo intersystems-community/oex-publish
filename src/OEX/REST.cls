@@ -29,6 +29,12 @@ ClassMethod Publish() As %Status
 {
     set %response.Timeout = 180
 
+    // if publication already in progress - reject new request
+    if ($data(^started)) {
+        do ..ReportHttpStatusCode(..#HTTP409CONFLICT)
+        return $$$OK
+    }
+    set ^started = 1
     try {
         set request = ##class(%Library.DynamicObject).%FromJSON(%request.Content)
         if (request.repo = "") {
