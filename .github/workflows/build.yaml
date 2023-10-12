@@ -1,0 +1,54 @@
+name: Build oex-publish image
+
+on:
+  push:
+    branches:
+    - master
+    - build-image
+
+env:
+  PROJECT_ID:   ${{ secrets.PROJECT_ID }}
+  GCR_LOCATION: ${{ secrets.GCR_LOCATION }}
+  IRIS_IMAGE:   oex-publish
+
+jobs:
+  build-image:
+    name: Build & Push image
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup gcloud cli
+      uses: google-github-actions/setup-gcloud@v1.1.1
+      with:
+        version: '448.0.0'
+
+    - name: Google Authentication
+      uses: google-github-actions/auth@v1.1.1
+      with:
+        credentials_json: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+
+    - name: Authenticate Docker
+      run: |-
+        gcloud --quiet auth configure-docker
+
+    - name: Build and push image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: "${{ env.GCR_LOCATION }}/${{ env.PROJECT_ID }}/${{ env.IRIS_IMAGE }}:${{ github.sha }}"
+
+  pagerduty-alert:
+    name: Workflow Failure to PagerDuty
+    runs-on: ubuntu-22.04
+    needs:
+    - build-image
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+    steps:
+    - name: Send PagerDuty alert on failure
+      uses: Entle/action-pagerduty-alert@0.2.0
+      with:
+        pagerduty-integration-key: '${{ secrets.PAGERDUTY_INTEGRATION_KEY }}'
+        pagerduty-dedup-key: github_workflow_failed
